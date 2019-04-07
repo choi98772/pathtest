@@ -11,6 +11,11 @@ namespace pathtest
 {
     public partial class Form1 : Form
     {
+        /*
+         * 맵은 n * n개의 셀로 구성된 이차원 배열입니다.
+         * 각셀은 화면에 CELL_SIZE * CELL_SIZE 크기의 박스로 그려집니다.
+         * */
+        const int CELL_SIZE = 8;
         const int MAX_UNIT = 200;
 
         CNavigationData m_ND = null;
@@ -53,7 +58,6 @@ namespace pathtest
         private void InitializeComponent2()
         {
             this.SetStyle(ControlStyles.ResizeRedraw, true);
-            this.ClientSize = new System.Drawing.Size(640, 640);
             this.Text = "PathTest";
             this.Paint += new PaintEventHandler(this.BasicX_Paint);
         }
@@ -84,13 +88,15 @@ namespace pathtest
                 }
             }
 
+            this.ClientSize = new System.Drawing.Size(m_ND.GetWidth() * CELL_SIZE, m_ND.GetHeight() * CELL_SIZE);
+
             m_TM = new Timer();
             m_TM.Interval = 1;
             m_TM.Tick += new EventHandler(Update);
             m_TM.Enabled = true;
 
 
-            m_Bitmap = new Bitmap(640, 640);
+            m_Bitmap = new Bitmap(m_ND.GetWidth() * CELL_SIZE, m_ND.GetWidth() * CELL_SIZE);
             m_Buf = Graphics.FromImage(m_Bitmap);
         }
 
@@ -116,39 +122,42 @@ namespace pathtest
             if (m_ND == null) return;
             
             int cx, cy;
-            for (int y = 0, py = 0;y < m_ND.GetHeight(); ++y, py += 16)
+            for (int y = 0, py = 0;y < m_ND.GetHeight(); ++y, py += CELL_SIZE)
             {
-                for (int x = 0, px = 0; x < m_ND.GetWidth(); ++x, px += 16)
+                for (int x = 0, px = 0; x < m_ND.GetWidth(); ++x, px += CELL_SIZE)
                 {
-                    cx = x * 16;
-                    cy = y * 16;
+                    cx = x * CELL_SIZE;
+                    cy = y * CELL_SIZE;
                     if (m_ND.IsValidPos(x, y))
                     {
-                        m_Buf.FillRectangle(Brushes.Yellow, (float)cx, (float)cy, 16.0f, 16.0f);
+                        m_Buf.FillRectangle(Brushes.Yellow, (float)cx, (float)cy, CELL_SIZE, CELL_SIZE);
                     }
                     else
                     {
-                        m_Buf.FillRectangle(Brushes.Red, (float)cx, (float)cy, 16.0f, 16.0f);
+                        m_Buf.FillRectangle(Brushes.Red, (float)cx, (float)cy, CELL_SIZE, CELL_SIZE);
                     }
                 }
             }
 
             for (int i = 0; i < MAX_UNIT; ++i)
             {
-                cx = m_pUnits[i].GetX() * 16;
-                cy = m_pUnits[i].GetY() * 16;
+                cx = m_pUnits[i].GetX() * CELL_SIZE;
+                cy = m_pUnits[i].GetY() * CELL_SIZE;
 
-                if (m_pUnits[i].IsTracking()) m_Buf.FillRectangle(Brushes.Blue, (float)cx, (float)cy, 16.0f, 16.0f);
-                else m_Buf.FillRectangle(Brushes.Green, (float)cx, (float)cy, 16.0f, 16.0f);
+                if (m_pUnits[i].IsTracking()) m_Buf.FillRectangle(Brushes.Blue, (float)cx, (float)cy, CELL_SIZE, CELL_SIZE);
+                else m_Buf.FillRectangle(Brushes.Green, (float)cx, (float)cy, CELL_SIZE, CELL_SIZE);
             }
             Graphics g = CreateGraphics();
             g.DrawImage(m_Bitmap, 0.0f, 0.0f);
         }
 
+        //마우스 버튼이 눌린경우
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            int cx = e.X / 16;
-            int cy = e.Y / 16;
+            //어느셀이 선택되었는지 확인하기
+            int cx = e.X / CELL_SIZE;
+            int cy = e.Y / CELL_SIZE;
+
             base.OnMouseDown(e);
 
             if (m_PathFinding != null)

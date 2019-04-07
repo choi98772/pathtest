@@ -1,0 +1,9 @@
+C:\Users\choi98772\Downloads\Pathtest\pathtest\bin\Debug\pathtest.exe
+C:\Users\choi98772\Downloads\Pathtest\pathtest\bin\Debug\pathtest.pdb
+C:\Users\choi98772\Downloads\Pathtest\pathtest\obj\Debug\pathtest.Form1.resources
+C:\Users\choi98772\Downloads\Pathtest\pathtest\obj\Debug\pathtest.Properties.Resources.resources
+C:\Users\choi98772\Downloads\Pathtest\pathtest\obj\Debug\pathtest.csproj.GenerateResource.cache
+C:\Users\choi98772\Downloads\Pathtest\pathtest\obj\Debug\pathtest.csproj.CoreCompileInputs.cache
+C:\Users\choi98772\Downloads\Pathtest\pathtest\obj\Debug\pathtest.exe
+C:\Users\choi98772\Downloads\Pathtest\pathtest\obj\Debug\pathtest.pdb
+C:\Users\choi98772\Downloads\Pathtest\pathtest\bin\Debug\map.txt
