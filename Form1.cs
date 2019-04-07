@@ -18,13 +18,13 @@ namespace pathtest
         const int CELL_SIZE = 8;
         const int MAX_UNIT = 200;
 
-        CNavigationData m_ND = null;
-        CAStarPathFinding m_PathFinding = null;
-        Timer m_TM = null;
-        Graphics m_Buf = null;
-        Bitmap m_Bitmap = null;
+        CNavigationData m_ND = null; //맵데이터
+        CAStarPathFinding m_PathFinding = null; //길찾기 알고리즘
+        Timer m_TM = null; //맵의 그리기 위한 요도의 타이머
+        Graphics m_Buf = null; 
+        Bitmap m_Bitmap = null; //맵 데이터를 위한 비트맵 객체
 
-        CUnit[] m_pUnits = null;
+        CUnit[] m_pUnits = null; //화면에 표시되는 유닛들
 
 
         public Form1()
@@ -44,6 +44,7 @@ namespace pathtest
 
                 if (i == 0)
                 {
+                    //가정 첫번째 유닛을 추적자로 설정
                     m_pUnits[i].EnableTracking(true);
                     //m_pUnits[i].StartTracking(true);  //주석을 해제 하면 자동 추적한다
                 }
@@ -70,6 +71,7 @@ namespace pathtest
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //맵 데이터를 파싱
             if (m_ND != null)
             {
                 if (!m_ND.Load("map.txt"))
@@ -88,6 +90,7 @@ namespace pathtest
                 }
             }
 
+            //맵의 셀개수를 기반으로 클라이언트 사이즈를 조정합니다. 윈도우의 크기는 (셀의 가로크기 * 셀사이즈) * (셀의 세로크기 * 셀사이즈) 가됩니다.
             this.ClientSize = new System.Drawing.Size(m_ND.GetWidth() * CELL_SIZE, m_ND.GetHeight() * CELL_SIZE);
 
             m_TM = new Timer();
@@ -95,7 +98,7 @@ namespace pathtest
             m_TM.Tick += new EventHandler(Update);
             m_TM.Enabled = true;
 
-
+            //맵을 비트맵에 그리기 위해서 맵의 픽셀크기 만큼의 비트맵을 만듭니다.
             m_Bitmap = new Bitmap(m_ND.GetWidth() * CELL_SIZE, m_ND.GetWidth() * CELL_SIZE);
             m_Buf = Graphics.FromImage(m_Bitmap);
         }
@@ -122,31 +125,47 @@ namespace pathtest
             if (m_ND == null) return;
             
             int cx, cy;
+
+            //먼저 맵데이터를 기반으로 맵을 그려줍니다.
             for (int y = 0, py = 0;y < m_ND.GetHeight(); ++y, py += CELL_SIZE)
             {
                 for (int x = 0, px = 0; x < m_ND.GetWidth(); ++x, px += CELL_SIZE)
                 {
                     cx = x * CELL_SIZE;
                     cy = y * CELL_SIZE;
+
                     if (m_ND.IsValidPos(x, y))
                     {
+                        //이동가능한 지점이면 노란색 박스로
                         m_Buf.FillRectangle(Brushes.Yellow, (float)cx, (float)cy, CELL_SIZE, CELL_SIZE);
                     }
                     else
                     {
+                        //이동불가능한 지점이면 빨간색 박스로
                         m_Buf.FillRectangle(Brushes.Red, (float)cx, (float)cy, CELL_SIZE, CELL_SIZE);
                     }
                 }
             }
 
+            //다음으로 유닛들을 화면에 그려줍니다.
             for (int i = 0; i < MAX_UNIT; ++i)
             {
                 cx = m_pUnits[i].GetX() * CELL_SIZE;
                 cy = m_pUnits[i].GetY() * CELL_SIZE;
 
-                if (m_pUnits[i].IsTracking()) m_Buf.FillRectangle(Brushes.Blue, (float)cx, (float)cy, CELL_SIZE, CELL_SIZE);
-                else m_Buf.FillRectangle(Brushes.Green, (float)cx, (float)cy, CELL_SIZE, CELL_SIZE);
+                if (m_pUnits[i].IsTracking())
+                {
+                    //추적자이면 파란색 박스로
+                    m_Buf.FillRectangle(Brushes.Blue, (float)cx, (float)cy, CELL_SIZE, CELL_SIZE);
+                }
+                else
+                {
+                    //아니면 녹색 박스로
+                    m_Buf.FillRectangle(Brushes.Green, (float)cx, (float)cy, CELL_SIZE, CELL_SIZE);
+                }
             }
+
+            //비트맵의 내용을 화면에 갱신해줍니다.
             Graphics g = CreateGraphics();
             g.DrawImage(m_Bitmap, 0.0f, 0.0f);
         }
@@ -164,16 +183,24 @@ namespace pathtest
             {
                 for (int i = 0;i < MAX_UNIT; ++i)
                 {
+                    //추적중인 유닛이면
                     if (m_pUnits[i].IsTracking())
                     {
+                        //유닛의 현재위치를 시작지점으로
                         CNaviNode pStart = CNaviNode.Create(m_pUnits[i].GetX(), m_pUnits[i].GetY());
+
+                        //마우스로 클릭한 지점의 셀 위치를 끝지점으로
                         CNaviNode pEnd = CNaviNode.Create(cx, cy);
+
                         List<CNaviNode> vecPath = new List<CNaviNode>();
+
+                        //경로룰 구해서 
                         if (!m_PathFinding.FindPath(pStart, pEnd, ref vecPath, m_ND))
                         {
                         }
                         else
                         {
+                            //경로가 구해지면 경로를 유닛에 설정해주기
                             m_pUnits[i].SetPath(vecPath);
                         }
                     }

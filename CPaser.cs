@@ -5,7 +5,7 @@ using System.IO;
 
 namespace pathtest
 {
-    //단순 텍스트 파서
+    //단순 텍스트파일 파서, 파일의 내용을 읽어서 단어를 하나씩 추출합니다.
     public class CPaser
     {
         private int m_iCodePage;
