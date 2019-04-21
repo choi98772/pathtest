@@ -1,0 +1,10 @@
+I:\PathTest\pathtest\bin\Debug\map.txt
+I:\PathTest\pathtest\bin\Debug\pathtest.exe
+I:\PathTest\pathtest\bin\Debug\pathtest.pdb
+I:\PathTest\pathtest\obj\Debug\pathtest.csprojAssemblyReference.cache
+I:\PathTest\pathtest\obj\Debug\pathtest.Form1.resources
+I:\PathTest\pathtest\obj\Debug\pathtest.Properties.Resources.resources
+I:\PathTest\pathtest\obj\Debug\pathtest.csproj.GenerateResource.cache
+I:\PathTest\pathtest\obj\Debug\pathtest.csproj.CoreCompileInputs.cache
+I:\PathTest\pathtest\obj\Debug\pathtest.exe
+I:\PathTest\pathtest\obj\Debug\pathtest.pdb

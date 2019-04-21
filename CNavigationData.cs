@@ -12,10 +12,10 @@ namespace pathtest
     public class CNavigationData
     {
         //맵의 폭과 높이(
-        int m_iWidth = 0;
-        int m_iHeight = 0;
+        int mWidth = 0;
+        int mHeight = 0;
 
-        byte[] m_MapData = null;    //단순히 0과 1로 표현되는 맵데이터
+        byte[] mMapData = null;    //단순히 0과 1로 표현되는 맵데이터
 
         public CNavigationData()
         {
@@ -25,15 +25,15 @@ namespace pathtest
         virtual public bool IsValidPos(int x, int y)
         {
             //맵을 벗어난 지점인가?
-            if (x < 0 || x >= m_iWidth)
+            if (x < 0 || x >= mWidth)
                 return false;
 
             //맵을 벗어난 지점인가?
-            if (y < 0 || y >= m_iHeight)
+            if (y < 0 || y >= mHeight)
                 return false;
 
             //이동 불가능한 지점인가?
-            if (m_MapData[(y * m_iWidth) + x] == 0)
+            if (mMapData[(y * mWidth) + x] == 0)
                 return false;
 
             return true;
@@ -43,22 +43,25 @@ namespace pathtest
         virtual public bool IsValidPos(CNaviNode pos)
         {
             //맵을 벗어난 지점인가?
-            if (pos.x < 0 || pos.x >= m_iWidth)
+            if (pos.x < 0 || pos.x >= mWidth)
                 return false;
 
             //맵을 벗어난 지점인가?
-            if (pos.y < 0 || pos.y >= m_iHeight)
+            if (pos.y < 0 || pos.y >= mHeight)
                 return false;
 
             //이동 불가능한 지점인가?
-            if (m_MapData[(pos.y * m_iWidth) + pos.x] == 0)
+            if (mMapData[(pos.y * mWidth) + pos.x] == 0)
                 return false;
 
             return true;
         }
 
 
-        //해당 노드에 인접한 이동가능한 이웃노드들을 모두구한다, 리턴값은 이웃의 개수
+        /*해당 노드에 인접한 이동가능한 이웃노드들을 모두구한다, 리턴값은 이웃의 개수
+         * 좌상단, 좌, 좌하단, 상단, 하단, 우상단, 우, 우하단 8방향을 검사해서
+         * 이동가능한 지점만 vecList목록에 담는다.
+         * */
         virtual public int GetNeighbor(CNaviNode pos, ref List<CNaviNode> vecList)
         {
             int[] distx = new int[3] { -1, 0, 1 };
@@ -70,33 +73,43 @@ namespace pathtest
                 {
                     int cx = distx[x] + pos.x;
                     int cy = disty[y] + pos.y;
-                    if (cx == pos.x && cy == pos.y) continue;
 
-                    if (!IsValidPos(cx, cy)) continue;
+                    //중앙 위치는 필요없다.
+                    if (cx == pos.x && cy == pos.y)
+                        continue;
+
+                    //이동불가능한 지점도 필요없음
+                    if (!IsValidPos(cx, cy))
+                        continue;
+
+                    //이동가능한 지점이면 목록에 추가하기
                     vecList.Add(CNaviNode.Create(cx, cy));
                 }
             }
 
+            //구해진 목록의 개수를 리턴
             return vecList.Count;
         }
         
         //맵의 폭과 높이
-        public int GetWidth() { return m_iWidth; }
-        public int GetHeight() { return m_iHeight; }
+        public int GetWidth() { return mWidth; }
+        public int GetHeight() { return mHeight; }
 
         //텍스트로 저장된 맵데이터를 파싱한다
         public bool Load(string strFilename)
         {
             CPaser ps = new CPaser();
-            if (!ps.Load(strFilename)) return false;
+
+            if (!ps.Load(strFilename))
+                return false;
 
             ps.SetCodePage(949);
 
-            m_MapData = null;
+            mMapData = null;
 
             byte[] buf = new byte[1024];
 
-            int iPos = 0;
+            int pos = 0;
 
             while (true)
             {
@@ -105,18 +118,18 @@ namespace pathtest
 
                 if (ps.Compare(buf, "width")) //맵의 가로 셀 개수
                 {
-                    m_iWidth = ps.GetInt(buf);
+                    mWidth = ps.GetInt(buf);
                     continue;
                 }
                 else if (ps.Compare(buf, "height")) //맵의 세로 셀 개수
                 {
-                    m_iHeight = ps.GetInt(buf);
+                    mHeight = ps.GetInt(buf);
                     continue;
                 }
                 else if (ps.Compare(buf, "mapstart")) //이후부터 맵데이터가 시작된다.
                 {
-                    m_MapData = new byte[m_iWidth * m_iHeight]; //셀 개수만큼 배열을 할당하고
-                    iPos = 0;
+                    mMapData = new byte[mWidth * mHeight]; //셀 개수만큼 배열을 할당하고
+                    pos = 0;
                 }
                 else
                 {
@@ -127,7 +140,7 @@ namespace pathtest
                     if (conv == null)
                         return false;
 
-                    m_MapData[iPos++] = (byte)int.Parse(conv);
+                    mMapData[pos++] = (byte)int.Parse(conv);
                 }
             }
 

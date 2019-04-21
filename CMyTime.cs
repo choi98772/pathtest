@@ -7,24 +7,24 @@ namespace pathtest
     //심플 타임체커
     class CMyTime
     {
-        private long m_lOld = DateTime.Now.Ticks;
+        private long mOldTime = DateTime.Now.Ticks;
 
         //현재 시간을 캐치
         public void Catch()
         {
-            m_lOld = DateTime.Now.Ticks;
+            mOldTime = DateTime.Now.Ticks;
         }
 
         //현재부터 이전에 시간을 캐치한 시점까지의 경과 시간을 틱단위로 얻는다
         public long GetPassedTime()
         {
-            return (DateTime.Now.Ticks - m_lOld);
+            return (DateTime.Now.Ticks - mOldTime);
         }
 
         //현재부터 이전에 시간을 캐치한 시점까지의 경과 시간을 초단위로 얻는다
         public float GetSecond()
         {
-            return (float)((DateTime.Now.Ticks - m_lOld) * 0.0000001f);
+            return (float)((DateTime.Now.Ticks - mOldTime) * 0.0000001f);
         }
     }
 }
